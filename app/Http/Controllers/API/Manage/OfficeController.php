@@ -33,8 +33,6 @@ class OfficeController extends Controller
             'address' => 'required',
             'email' => 'required|email',
             'mobile' => 'required',
-            'classrooms' => 'required',
-            'capacity' => 'required',
         ]);
         if($validator->fails()){
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
@@ -71,8 +69,6 @@ class OfficeController extends Controller
             'address' => 'required',
             'email' => 'required|email',
             'mobile' => 'required',
-            'classrooms' => 'required',
-            'capacity' => 'required',
         ]);
         if($validator->fails()){
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);

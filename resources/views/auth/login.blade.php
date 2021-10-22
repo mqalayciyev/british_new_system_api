@@ -4,18 +4,21 @@
 
     <div class="login-page">
         <div class="container p-3" id="form-container">
-            <form action="#">
+            <form action="{{ route('login') }}" method="POST">
+                @csrf
                 <div class="form-group">
                     <h1 class="text-center">Daxil Ol</h1>
                 </div>
+                @include('common.errors.validate')
+                @include('common.alert')
                 <div class="row form-group">
                     <div class="col-12">
-                        <input type="email" class="form-control" placeholder="E-Poçt" />
+                        <input type="email" name="email" class="form-control" placeholder="E-Poçt" />
                     </div>
                 </div>
                 <div class="row form-group">
                     <div class="col-12">
-                        <input type="password" class="form-control" placeholder="Şifrə" />
+                        <input type="password" name="password" class="form-control" placeholder="Şifrə" />
                     </div>
                 </div>
                 <div class="row form-group">
@@ -26,7 +29,7 @@
                           </div>
                     </div>
                     <div class="col-6 text-right">
-                        <a href="{{ route('password.forgot') }}">Şifrəni unutmusan?</a>
+                        <a href="{{ route('password.request') }}">Şifrəni unutmusan?</a>
                     </div>
                 </div>
                 <div class="row form-group">

@@ -14,7 +14,7 @@
                             Unique and powerful suite of software to run your entire business, brought to you by a company
                             with the long term vision to transform the way you work.
                         </p>
-                        <ul class="ud-hero-buttons">
+                        {{-- <ul class="ud-hero-buttons">
                             <li>
                                 <a href="https://links.uideck.com/play-bootstrap-download" rel="nofollow noopener"
                                     target="_blank" class="ud-main-btn ud-white-btn">
@@ -27,7 +27,7 @@
                                     Learn More <i class="lni lni-arrow-right"></i>
                                 </a>
                             </li>
-                        </ul>
+                        </ul> --}}
                     </div>
                 </div>
             </div>

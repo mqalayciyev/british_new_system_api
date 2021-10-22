@@ -1,9 +1,8 @@
-<title>CRM</title>
+<title>Todrix @yield('title')</title>
 
 
-<!-- Primary Meta Tags -->
-<meta name="title" content="Play - Free Open Source HTML Bootstrap Template by UIdeck">
-<meta name="description" content="Play - Free Open Source HTML Bootstrap Template by UIdeck Team">
+<meta name="description" content="@yield('description')">
+<meta name="keywords" content="@yield('keywords')">
 
 <!-- Open Graph / Facebook -->
 <meta property="og:type" content="website">
@@ -32,6 +31,8 @@
 <!-- Fonts -->
 <link rel="dns-prefetch" href="//fonts.gstatic.com">
 <link href="https://fonts.googleapis.com/css?family=Nunito" rel="stylesheet">
+
+<link rel="stylesheet" type="text/css" href="DataTables/datatables.min.css"/>
 
 
 

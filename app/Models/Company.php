@@ -4,13 +4,17 @@ namespace App\Models;
 
 // use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Notifications\Notifiable;
+// use Laravel\Sanctum\HasApiTokens;
 
-class Company extends Model
+class Company extends Authenticatable
 {
-    use SoftDeletes;
+    use SoftDeletes, Notifiable;
     protected $table = 'companies';
     protected $guarded = [];
+    protected $hidden = array('password');
 
     public function manager(){
         return $this->hasOne('App\Models\Manager');

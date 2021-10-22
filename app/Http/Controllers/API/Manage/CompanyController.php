@@ -71,7 +71,6 @@ class CompanyController extends Controller
             'email' => 'required|email',
             'email' => Rule::unique('companies')->ignore($id),
             'name' => 'required|min:3',
-            'mobile' => 'required',
             'currency' => 'required',
         ]);
 

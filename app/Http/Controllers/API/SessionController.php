@@ -71,15 +71,15 @@ class SessionController extends Controller
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         }
 
+
+        // if(!$users){
+        //     return response()->json(['status' => 'error', 'message' => ['Bu emailə uyğun istifadəçi tapılmadı.']]);
+        // }
+
+
         $users = User::where('email', request('email'))->where('login', $request->login)->where('status', 1)->first();
-        if(!$users){
-            return response()->json(['status' => 'error', 'message' => ['Bu emailə uyğun istifadəçi tapılmadı.']]);
-        }
-
-
-
         $office = Office::where('company', $users->company)->where('id', $users->office)->where('status',1)->first();
-        $company = Company::where('id', $users->company)->where('status', 1)->first();
+        $company = Company::where('id', $users->company)->where('is_active', 1)->first();
 
         if(!$company){
             return response()->json(['status' => 'warning', 'message' => ['Bu şirkət hal hazırda aktiv deyil.']]);
@@ -93,6 +93,7 @@ class SessionController extends Controller
             'email' => $request->email,
             'password' => $request->password,
             'login' => request('login'),
+            'status' => 1,
             'type' => $users->type,
             'company' => $users->company,
         ];

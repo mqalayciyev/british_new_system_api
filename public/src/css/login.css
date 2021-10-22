@@ -18,6 +18,7 @@
 	flex-direction: column;
     font-family: var(--font);
 	min-height: 100vh;
+    padding: 50px 0;
 }
 
 
@@ -34,7 +35,7 @@
 }
 
 #form-container .form-control {
-    padding: 25px 15px;
+    height: 55px;
 }
 
 #form-container button {

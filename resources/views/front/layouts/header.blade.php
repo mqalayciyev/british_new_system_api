@@ -3,9 +3,11 @@
         <div class="row">
             <div class="col-lg-12">
                 <nav class="navbar navbar-expand-lg">
+
                     <a class="navbar-brand" href="{{ route('home') }}">
                         <img src="{{ asset('src/images/logo/logo.svg') }}" alt="Logo" />
                     </a>
+
                     <button class="navbar-toggler">
                         <span class="toggler-icon"> </span>
                         <span class="toggler-icon"> </span>
@@ -72,12 +74,30 @@
                     </div>
 
                     <div class="navbar-btn d-none d-sm-inline-block">
-                        <a href="{{ route('login') }}" class="ud-main-btn ud-login-btn">
-                            Daxil ol
-                        </a>
-                        <a class="ud-main-btn ud-white-btn" href="{{ route('register') }}">
-                            Qeydiyyat
-                        </a>
+
+                        @auth
+                            <form action="{{ route('logout') }}" method="POST">
+                                @csrf
+                                <a href="{{ route('account') }}" class="ud-main-btn ud-login-btn">
+                                    {{ auth()->user()->name }}
+                                </a>
+
+                                <button type="submit" class="ud-main-btn ud-login-btn m-0">
+                                    Çıxış
+                                </button>
+                            </form>
+
+                        @endauth
+
+                        @guest
+                            <a href="{{ route('login') }}" class="ud-main-btn ud-login-btn">
+                                Daxil ol
+                            </a>
+
+                            <a class="ud-main-btn ud-white-btn" href="{{ route('register') }}">
+                                Qeydiyyat
+                            </a>
+                        @endguest
                     </div>
                 </nav>
             </div>

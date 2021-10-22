@@ -3,5 +3,7 @@
 <script src="{{ asset('src/js/wow.min.js') }}"></script>
 <script src="{{ asset('src/js/main.js') }}"></script>
 
+<script type="text/javascript" src="DataTables/datatables.min.js"></script>
+
 
 @yield('script')
