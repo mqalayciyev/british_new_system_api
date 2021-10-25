@@ -160,17 +160,19 @@ p {
   background: var(--heading-color);
 }
 
+
 @media (max-width: 767px) {
   .container {
-    padding-left: 40px;
-    padding-right: 40px;
+    padding-left: 15px;
+    padding-right: 15px;
   }
 }
 
 @media only screen and (min-width: 576px) and (max-width: 767px) {
   .container {
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 15px;
+    padding-right: 15px;
+    max-width: 100%;
   }
 }
 

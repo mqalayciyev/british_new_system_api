@@ -21,6 +21,11 @@
     padding: 50px 0;
 }
 
+.content-page{
+    min-height: 100vh;
+    font-family: var(--font);
+}
+
 
 
 #form-container a {

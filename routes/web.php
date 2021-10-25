@@ -28,5 +28,14 @@ Auth::routes();
 //     Route::match(['get', 'post'], '/login', [App\Http\Controllers\Front\UserController::class, 'index'])->name('login');
 // });
 Route::group(['middleware' => 'auth'], function () {
-    Route::get('/account', [App\Http\Controllers\Front\AccountController::class, 'index'])->name('account');
+
+    Route::group(['prefix' => 'account'], function () {
+        Route::get('/', [App\Http\Controllers\Front\AccountController::class, 'index'])->name('account');
+    });
+    Route::group(['prefix' => 'payments'], function () {
+        Route::get('/', [App\Http\Controllers\Front\PaymentController::class, 'index'])->name('payments');
+        Route::get('/index_data', [App\Http\Controllers\Front\PaymentController::class, 'index_data'])->name('payments.index_data');
+    });
+    Route::get('/notifications', [App\Http\Controllers\Front\NotificationsController::class, 'index'])->name('notifications');
+
 });

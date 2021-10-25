@@ -118,4 +118,7 @@ class Company extends Authenticatable
     public function video(){
         return $this->hasOne('App\Models\Video');
     }
+    public function companypayment(){
+        return $this->hasOne('App\Models\Company\CompanyPayment')->withDefault();
+    }
 }
