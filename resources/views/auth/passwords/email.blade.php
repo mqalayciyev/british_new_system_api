@@ -4,7 +4,7 @@
 
     <div class="login-page">
         <div class="container p-3" id="form-container">
-            <form action="{{ route('password.email') }}" method="POST">
+            <form action="{{ route('password.reset') }}" method="POST">
                 @csrf
                 <div class="form-group">
                     <h1 class="text-center">Şifrəni Sıfırlamaq</h1>
@@ -18,7 +18,7 @@
                 </div>
                 <div class="row form-group">
                     <div class="col-12 text-center">
-                        <button class="btn btn-lg btn-block">Şifrəni sıfıra</button>
+                        <button class="btn btn-lg btn-block">Şifrəni sıfırla</button>
                     </div>
                 </div>
             </form>

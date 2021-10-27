@@ -74,22 +74,18 @@
                     </div>
 
                     <div class="navbar-btn d-none d-sm-inline-block">
-
-                        @auth
+                        @if (Auth::guard('user')->check())
                             <form action="{{ route('logout') }}" method="POST">
                                 @csrf
                                 <a href="{{ route('account') }}" class="ud-main-btn ud-login-btn">
-                                    {{ auth()->user()->name }}
+                                    {{ auth('user')->user()->name }}
                                 </a>
 
                                 <button type="submit" class="ud-main-btn ud-login-btn m-0">
                                     Çıxış
                                 </button>
                             </form>
-
-                        @endauth
-
-                        @guest
+                        @else
                             <a href="{{ route('login') }}" class="ud-main-btn ud-login-btn">
                                 Daxil ol
                             </a>
@@ -97,7 +93,7 @@
                             <a class="ud-main-btn ud-white-btn" href="{{ route('register') }}">
                                 Qeydiyyat
                             </a>
-                        @endguest
+                        @endif
                     </div>
                 </nav>
             </div>

@@ -30,22 +30,22 @@ class UserController extends Controller
             $credentials = [
                 'email' => request()->get('email'),
                 'password' => request()->get('password'),
-                'is_active' => 1,
+                // 'is_active' => 1,
             ];
 
-            if (Auth::attempt($credentials, request()->has('rememberme'))) {
+            if (Auth::guard('user')->attempt($credentials, request()->has('rememberme'))) {
                 return redirect()->route('account');
             } else {
                 return back()->withInput()->withErrors(['email' => 'Xətalı giriş']);
             }
 
         }
-        return view('front.page.login');
+        return view('auth.login');
     }
 
     public function form()
     {
-        return view('front.page.register');
+        return view('auth.register');
     }
 
     public function save($id = 0)
@@ -55,44 +55,43 @@ class UserController extends Controller
             'last_name' => 'required',
             'mobile' => 'required',
             'email' => 'required|email',
-            'email' => Rule::unique('admin')->ignore($id)
+            'email' => Rule::unique('companies')->ignore($id)
         ]);
         // return view('front.page.register');
     }
     public function logout()
     {
-        Auth::logout();
+        Auth::guard('user')->logout();
         request()->session()->flush();
         request()->session()->regenerate();
         return redirect()->route('login');
     }
-    // public function forgot(){
-    //     if (request()->isMethod('POST')) {
-    //         // $admin = Admin::where('email', '=', request('email'))->first();
-    //         $count =Admin::where('email', '=', request('email'))->count();
+    public function forgot(){
+        return view('auth.passwords.email');
 
-    //         if ($count == 0) {
-    //             return redirect()->back()->withErrors(['email' => trans('İstifadəçi mövcud deyil')]);
-    //         }
+    }
+    public function reset(){
+            // $admin = Admin::where('email', '=', request('email'))->first();
+            // $count =Admin::where('email', '=', request('email'))->count();
 
-    //         $token = Str::random(60);
-    //         PasswordReset::insert([
-    //             'email' =>request('email'),
-    //             'token' => $token,
-    //             'created_at' => Carbon::now()
-    //         ]);
-    //         $reset = ['link' => route('manage.recovery.password', [$token, request('email')])];
-    //         Mail::to(request('email'))->send(new ResetPasswordAdmin($reset));
-    //         return redirect()
-    //             ->route('manage.login')
-    //             ->with('message_type', 'success')
-    //             ->with('message', 'Məlumat emailinizə göndərildi.');
-    //     }
-    //     else{
-    //         return view('manage.pages.forgot_password');
-    //     }
+            // if ($count == 0) {
+            //     return redirect()->back()->withErrors(['email' => trans('İstifadəçi mövcud deyil')]);
+            // }
 
-    // }
+            // $token = Str::random(60);
+            // PasswordReset::insert([
+            //     'email' =>request('email'),
+            //     'token' => $token,
+            //     'created_at' => Carbon::now()
+            // ]);
+            // $reset = ['link' => route('manage.recovery.password', [$token, request('email')])];
+            // Mail::to(request('email'))->send(new ResetPasswordAdmin($reset));
+            return redirect()
+                ->route('login')
+                ->with('message_type', 'success')
+                ->with('message', 'Məlumat emailinizə göndərildi.');
+
+    }
     // public function recovery($token, $email){
     //     $count = PasswordReset::where('email', $email)
     //         ->where('token', $token)

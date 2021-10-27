@@ -23,11 +23,16 @@ Route::get('/', [App\Http\Controllers\Front\HomeController::class, 'index'])->na
 // Route::get('/forgot-password', [App\Http\Controllers\Front\UserController::class, 'forgot'])->name('password.forgot');
 // Route::get('/register', [App\Http\Controllers\Front\UserController::class, 'form'])->name('register');
 // Route::post('/company/save/{id?}', [App\Http\Controllers\Front\UserController::class, 'save'])->name('company.save');
-Auth::routes();
-// Route::group(['middleware' => 'guest'], function () {
-//     Route::match(['get', 'post'], '/login', [App\Http\Controllers\Front\UserController::class, 'index'])->name('login');
-// });
-Route::group(['middleware' => 'auth'], function () {
+// Auth::routes();
+Route::group(['middleware' => 'guest'], function () {
+    Route::match(['get', 'post'], '/login', [App\Http\Controllers\Front\UserController::class, 'index'])->name('login');
+    Route::get('/register', [App\Http\Controllers\Front\UserController::class, 'form'])->name('register');
+    Route::get('/forgot-password', [App\Http\Controllers\Front\UserController::class, 'forgot'])->name('password.request');
+    Route::post('/reset-password', [App\Http\Controllers\Front\UserController::class, 'reset'])->name('password.reset');
+    // Route::match(['get', 'post'], '/forgot-password', [App\Http\Controllers\Front\UserController::class, 'forgot'])->name('password.request');
+});
+Route::group(['middleware' => 'user'], function () {
+    Route::post('/logout', [App\Http\Controllers\Front\UserController::class, 'logout'])->name('logout');
 
     Route::group(['prefix' => 'account'], function () {
         Route::get('/', [App\Http\Controllers\Front\AccountController::class, 'index'])->name('account');

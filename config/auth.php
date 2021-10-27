@@ -45,17 +45,9 @@ return [
             'driver' => 'passport',
             'provider' => 'users',
         ],
-        'teacher' => [
+        'user' => [
             'driver' => 'session',
-            'provider' => 'teacher',
-        ],
-        'manager' => [
-            'driver' => 'session',
-            'provider' => 'manager',
-        ],
-        'student' => [
-            'driver' => 'session',
-            'provider' => 'student',
+            'provider' => 'user',
         ],
     ],
 
@@ -79,19 +71,11 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
+            'model' => App\Models\User::class,
+        ],
+        'user' => [
+            'driver' => 'eloquent',
             'model' => App\Models\Company::class,
-        ],
-        'manager' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Manager::class,
-        ],
-        'teacher' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Teacher::class,
-        ],
-        'student' => [
-            'driver' => 'eloquent',
-            'model' => App\Models\Student::class,
         ],
 
         // 'users' => [
@@ -122,21 +106,9 @@ return [
             'expire' => 60,
             'throttle' => 60,
         ],
-        'manager' => [
-            'provider' => 'manager',
-            'table' => 'managers',
-            'expire' => 60,
-            'throttle' => 60,
-        ],
-        'teacher' => [
-            'provider' => 'teacher',
-            'table' => 'teachers',
-            'expire' => 60,
-            'throttle' => 60,
-        ],
-        'student' => [
-            'provider' => 'student',
-            'table' => 'students',
+        'user' => [
+            'provider' => 'user',
+            'table' => 'companies',
             'expire' => 60,
             'throttle' => 60,
         ],
