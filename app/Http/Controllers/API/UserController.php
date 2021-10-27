@@ -3,10 +3,20 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Company;
+use App\Models\User;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
-use App\Models\Notification;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\File;
+// use Intervention\Image\Facades\Image;
+use Image;
 
-class NotificationController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,21 +25,7 @@ class NotificationController extends Controller
      */
     public function index()
     {
-        if(request()->user()->login == 1) {
-            $raw = 'login = 1';
-        }
-        else{
-            $raw = 'user = ' .  request()->user()->id;
-        }
-        $notifications = Notification::where('company', request()->user()->company)
-            ->whereRaw($raw)
-            ->orderByDesc('created_at')->get();
-        $count = Notification::where('company', request()->user()->company)
-            ->whereRaw($raw)
-            ->where('status', 0)
-            ->orderByDesc('created_at')->count();
-
-        return response()->json(['status' => 'success', 'notifications' => $notifications, 'count' => $count]);
+        //
     }
 
     /**
@@ -51,7 +47,12 @@ class NotificationController extends Controller
      */
     public function show($id)
     {
-        //
+        $user =User::select(['users.*', 'offices.name as office_name'])
+        ->leftJoin('offices', 'offices.id', 'users.office')
+        ->where('users.id', $id)
+        ->where('users.company', request()->user()->company)
+        ->first();
+        return response()->json(['status' => 'success', 'user' => $user]);
     }
 
     /**

@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\File;
 class MessagesController extends Controller
 {
 
-    function createSlug($str) {
+    function createSlug($str)
+    {
         $search = array('ə', 'Ə', 'ç', 'Ç', 'Ș', 'ü', 'Ü', 'ö', 'Ö', 'ğ', 'Ğ', 'ı', 'Ț', 'ş', 'ţ', 'Ş', 'Ţ', 'ș', 'ț', 'î', 'â', 'ă', 'Î', 'Â', 'Ă', 'ë', 'Ë');
         $replace = array('e', 'E', 'c', 'C', 's', 'u', 'U', 'o', 'O', 'g', 'G', 'i', 't', 's', 't', 's', 't', 's', 't', 'i', 'a', 'a', 'i', 'a', 'a', 'e', 'E');
         $str = str_ireplace($search, $replace, strtolower(trim($str)));
@@ -31,19 +32,25 @@ class MessagesController extends Controller
      */
     public function index()
     {
-        $collection  = collect(Messages::select(['messages.*', 'users1.image as user1_image', 'users2.image as user2_image', 'users1.id as user1_id', 'users2.id as user2_id',
-            DB::raw("CONCAT(users1.first_name,' ',users1.last_name) as user_1"), DB::raw("CONCAT(users2.first_name,' ',users2.last_name) as user_2")])
+        $collection  = collect(Messages::select([
+            'messages.*', 'users1.image as user1_image', 'users2.image as user2_image', 'users1.id as user1_id', 'users2.id as user2_id',
+            DB::raw("CONCAT(users1.first_name,' ',users1.last_name) as user_1"), DB::raw("CONCAT(users2.first_name,' ',users2.last_name) as user_2")
+        ])
             ->leftJoin('users as users1', 'users1.id', 'messages.sender')
             ->leftJoin('users as users2', 'users2.id', 'messages.receiving')
             ->whereRaw('messages.sender=' . request()->user()->id . ' OR messages.receiving = ' . request()->user()->id)
             ->where('messages.company', request()->user()->company)
             ->orderByDesc('messages.created_at')
             ->get());
+        $count  = Messages::where('company', request()->user()->company)
+            ->where('receiving', request()->user()->id)
+            ->where('status', 0)
+            ->count();
         $messages = $collection->unique(function ($item) {
-            return $item['sender'].$item['receiving'];
+            return $item['sender'] . $item['receiving'];
         });
 
-        return response()->json(['status' => 'success', 'messages' => $messages]);
+        return response()->json(['status' => 'success', 'messages' => $messages, 'count' => $count]);
     }
 
     /**
@@ -57,30 +64,28 @@ class MessagesController extends Controller
         $validator = Validator::make(request()->all(), [
             'userid' => 'required',
         ]);
-        if($validator->fails()){
+        if ($validator->fails()) {
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         }
         $data = $request->only('message');
-        if(!$request->hasFile('file') && !$request->message){
+        if (!$request->hasFile('file') && !$request->message) {
             return response()->json(['status' => 'error', 'message' => ['Mesaj bos ola bilmez']]);
         }
-        if($request->hasFile('file'))
-        {
+        if ($request->hasFile('file')) {
             $company = Company::find($request->user()->company);
             $file = $request->file('file');
 
-            $path = public_path().'/assets/' . $this->createSlug($company->name) . '/message_files';
-            if (!File::exists($path))
-            {
+            $path = public_path() . '/assets/' . $this->createSlug($company->name) . '/message_files';
+            if (!File::exists($path)) {
                 File::makeDirectory($path, $mode = 0777, true, true);
             }
 
-            $name= strtolower($request->user()->first_name) . '_' . strtolower($request->user()->last_name) . '_' .time().'.'.$file->getClientOriginalExtension();
-            $request->file->move('assets/' . $this->createSlug($company->name) . '/message_files/' , $name);
+            $name = strtolower($request->user()->first_name) . '_' . strtolower($request->user()->last_name) . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $request->file->move('assets/' . $this->createSlug($company->name) . '/message_files/', $name);
             $data['file_url'] = asset('assets/' . $this->createSlug($company->name) . '/message_files');
             $data['file_name'] = $name;
 
-//            return response()->download(storage_path('app/public/files/' . slugify($company->name) . '/' . $name));
+            //            return response()->download(storage_path('app/public/files/' . slugify($company->name) . '/' . $name));
 
         }
         $data['company'] = $request->user()->company;
@@ -99,11 +104,11 @@ class MessagesController extends Controller
      */
     public function show($id)
     {
-        Messages::where('company', request()->user()->company)->where('sender', $id)->update([ 'status' => 1]);
+        Messages::where('company', request()->user()->company)->where('sender', $id)->update(['status' => 1]);
         $messages = collect(Messages::select(['messages.*', 'users1.image as user1_image', 'users2.image as user2_image', 'users1.id as user1_id', 'users2.id as user2_id', DB::raw("CONCAT(users1.first_name,' ',users1.last_name) as user_1"), DB::raw("CONCAT(users2.first_name,' ',users2.last_name) as user_2")])
             ->leftJoin('users as users1', 'users1.id', 'messages.sender')
             ->leftJoin('users as users2', 'users2.id', 'messages.receiving')
-            ->whereRaw('messages.sender = '.$id.' AND messages.receiving = ' .  request()->user()->id . ' OR messages.sender = '.request()->user()->id.' AND messages.receiving = ' . $id)
+            ->whereRaw('messages.sender = ' . $id . ' AND messages.receiving = ' .  request()->user()->id . ' OR messages.sender = ' . request()->user()->id . ' AND messages.receiving = ' . $id)
             ->where('messages.company', request()->user()->company)
             ->orderByDesc('messages.created_at')
             ->get());
@@ -139,13 +144,14 @@ class MessagesController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Məlumat silindi']);
     }
 
-    public function count_messages () {
-    $count = Messages::select(['messages.*'])
-        ->where('messages.receiving', request()->user()->id)
-        ->where('messages.company', request()->user()->company)
-        ->where('messages.status', 0)
-        ->count();
+    public function count_messages()
+    {
+        $count = Messages::select(['messages.*'])
+            ->where('messages.receiving', request()->user()->id)
+            ->where('messages.company', request()->user()->company)
+            ->where('messages.status', 0)
+            ->count();
 
-    return response()->json(['status' => 'success', 'count' => $count]);
+        return response()->json(['status' => 'success', 'count' => $count]);
     }
 }

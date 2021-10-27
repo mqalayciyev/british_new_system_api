@@ -73,6 +73,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('/tasks/completed', ['App\Http\Controllers\API\Manage\TasksController', 'completed']);
         Route::post('/tasks/status/{id}', ['App\Http\Controllers\API\Manage\TasksController', 'status']);
         Route::apiResource('media', 'App\Http\Controllers\API\Manage\MediaController');
+        Route::apiResource('users', 'App\Http\Controllers\API\UserController');
     });
 
     Route::prefix('teachers')->group(function () {

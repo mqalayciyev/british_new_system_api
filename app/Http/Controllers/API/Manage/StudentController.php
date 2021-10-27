@@ -26,7 +26,11 @@ class StudentController extends Controller
         $student = User::select('users.*', "offices.id as office_id", 'offices.name as office_name',
             "age_categories.title as age_cat_title", "age_categories.id as age_cat_id",
             DB::raw("CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('value' , lessons.id , 'label' , lessons.title )), ']') AS lessons"),
+            DB::raw("CONCAT(GROUP_CONCAT(JSON_OBJECT('id' , student_study_days.id , 'monday' , student_study_days.monday,
+            'tuesday' , student_study_days.tuesday, 'wednesday', student_study_days.wednesday, 'thursday', student_study_days.thursday,
+             'friday', student_study_days.friday, 'saturday', student_study_days.saturday, 'sunday', student_study_days.sunday ))) AS study_days"),
             DB::raw("CONCAT(users.first_name,' ',users.last_name) as user_name"))
+            ->leftJoin('student_study_days', 'student_study_days.student', 'users.id')
             ->leftJoin('offices', 'offices.id', 'users.office')
             ->leftJoin('student_lessons', 'student_lessons.student', 'users.id')
             ->leftJoin('lessons', 'lessons.id', 'student_lessons.lesson')
@@ -82,13 +86,11 @@ class StudentController extends Controller
 
         if(request()->has('selectedStudyDays') && count(request('selectedStudyDays')) > 0){
             $study_days = request('selectedStudyDays');
+            $selectedStudyDays['company'] = request()->user()->company;
             for($i = 0; $i< count($study_days); $i++){
-                StudentStudyDay::create([
-                    'student' => $user->id,
-                    strtolower($study_days[$i]['label']) => 1,
-                    'company' => request()->user()->company,
-                ]);
+                $selectedStudyDays[$study_days[$i]['label']] = 1;
             }
+            StudentStudyDay::updateOrCreate(['student' => $user->id], $selectedStudyDays);
         }
         if(request()->has('selectedLessons') && count(request('selectedLessons')) > 0 ){
             $lesson = request('selectedLessons');
@@ -161,14 +163,12 @@ class StudentController extends Controller
         if(request()->has('selectedStudyDays') && count(request('selectedStudyDays')) > 0 ){
             StudentStudyDay::where('student',  $id)->where('company',  request()->user()->company)->delete();
             $study_days = request('selectedStudyDays');
-
+            $selectedStudyDays['company'] = request()->user()->company;
             for($i = 0; $i< count($study_days); $i++){
-                StudentStudyDay::create([
-                    'student' => $id,
-                    strtolower($study_days[$i]['label']) => 1,
-                    'company' => request()->user()->company,
-                ]);
+                $selectedStudyDays[$study_days[$i]['label']] = 1;
             }
+            StudentStudyDay::updateOrCreate(['student' => $id], $selectedStudyDays);
+
         }
         else{
             StudentStudyDay::where('student',  $id)->where('company',  request()->user()->company)->delete();
@@ -203,7 +203,7 @@ class StudentController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Məlumat silindi']);
     }
     public function study_days ($id){
-        $study_days = StudentStudyDay::where('company', request()->user()->company)->where('student', $id)->get();
+        $study_days = StudentStudyDay::where('company', request()->user()->company)->where('student', $id)->first();
         return response()->json(['status' => 'success', 'study_days' => $study_days]);
     }
     public function lessons ($id){

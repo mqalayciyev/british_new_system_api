@@ -39,14 +39,17 @@ class MessagesController extends Controller
             ->leftJoin('users as users2', 'users2.id', 'messages.receiving')
             ->whereRaw('messages.sender=' . request()->user()->id . ' OR messages.receiving = ' . request()->user()->id)
             ->where('messages.company', request()->user()->company)
-            ->where('messages.status', 2)
             ->orderByDesc('messages.created_at')
             ->get());
+        $count  = Messages::where('company', request()->user()->company)
+                ->where('receiving', request()->user()->id)
+                ->where('status', 0)
+                ->count();
         $messages = $collection->unique(function ($item) {
             return $item['sender'] . $item['receiving'];
         });
 
-        return response()->json(['status' => 'success', 'messages' => $messages]);
+        return response()->json(['status' => 'success', 'messages' => $messages, 'count' => $count]);
     }
 
     /**

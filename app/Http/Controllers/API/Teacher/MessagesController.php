@@ -41,11 +41,15 @@ class MessagesController extends Controller
             ->where('messages.company', request()->user()->company)
             ->orderByDesc('messages.created_at')
             ->get());
+        $count  = Messages::where('company', request()->user()->company)
+            ->where('receiving', request()->user()->id)
+            ->where('status', 0)
+            ->count();
         $messages = $collection->unique(function ($item) {
             return $item['sender'] . $item['receiving'];
         });
 
-        return response()->json(['status' => 'success', 'messages' => $messages]);
+        return response()->json(['status' => 'success', 'messages' => $messages, 'count' => $count]);
     }
 
     /**
@@ -139,7 +143,8 @@ class MessagesController extends Controller
             ->where('messages.company', request()->user()->company)->delete();
         return response()->json(['status' => 'success', 'message' => 'Məlumat silindi']);
     }
-    public function count_messages () {
+    public function count_messages()
+    {
         $count = Messages::select(['messages.*'])
             ->where('messages.receiving', request()->user()->id)
             ->where('messages.company', request()->user()->company)

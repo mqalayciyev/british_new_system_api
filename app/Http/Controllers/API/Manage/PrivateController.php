@@ -22,9 +22,9 @@ class PrivateController extends Controller
         $private = PrivateLesson::select('private_lessons.*', 'offices.name as office_name',
             'levels.title as level_title', 'lessons.title as lesson_title', 'age_categories.title as age_category_title',
             DB::raw("CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id' , academic_hours.id , 'minutes' , academic_hours.minutes, 'price' , academic_hours.price )), ']') AS hours_price"),
-            DB::raw("CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id' , private_study_days.id , 'monday' , private_study_days.monday,
+            DB::raw("CONCAT(GROUP_CONCAT(JSON_OBJECT('id' , private_study_days.id , 'monday' , private_study_days.monday,
                                     'tuesday' , private_study_days.tuesday, 'wednesday', private_study_days.wednesday, 'thursday', private_study_days.thursday,
-                                     'friday', private_study_days.friday, 'saturday', private_study_days.saturday, 'sunday', private_study_days.sunday )), ']') AS private_study_days"),
+                                     'friday', private_study_days.friday, 'saturday', private_study_days.saturday, 'sunday', private_study_days.sunday ))) AS study_days"),
             DB::raw("CONCAT(teacher.first_name,' ',teacher.last_name) as teacher_name"),
             DB::raw("CONCAT(students.first_name,' ',students.last_name) as student_name"))
             ->leftJoin('private_study_days', 'private_study_days.private', 'private_lessons.id')
@@ -75,14 +75,13 @@ class PrivateController extends Controller
         $private = PrivateLesson::create($data);
 
         if(request()->has('selectedStudyDays') && count(request('selectedStudyDays')) > 0){
+
             $study_days = request('selectedStudyDays');
+            $selectedStudyDays['company'] = request()->user()->company;
             for($i = 0; $i< count($study_days); $i++){
-                PrivateStudyDay::create([
-                    'private' => $private->id,
-                    $study_days[$i]['value'] => 1,
-                    'company' => request()->user()->company,
-                ]);
+                $selectedStudyDays[$study_days[$i]['label']] = 1;
             }
+            PrivateStudyDay::updateOrCreate(['private' => $private->id], $selectedStudyDays);
         }
 
         return response()->json(['status' => 'success']);
@@ -128,16 +127,14 @@ class PrivateController extends Controller
         PrivateLesson::where('id', $id)->update($data);
 
         if(request()->has('selectedStudyDays') && count(request('selectedStudyDays')) > 0 ){
+
             PrivateStudyDay::where('private',  $id)->where('company',  request()->user()->company)->delete();
             $study_days = request('selectedStudyDays');
-
+            $selectedStudyDays['company'] = request()->user()->company;
             for($i = 0; $i< count($study_days); $i++){
-                PrivateStudyDay::create([
-                    'private' => $id,
-                    $study_days[$i]['value'] => 1,
-                    'company' => request()->user()->company,
-                ]);
+                $selectedStudyDays[$study_days[$i]['label']] = 1;
             }
+            PrivateStudyDay::updateOrCreate(['private' => $id], $selectedStudyDays);
         }
         else{
             PrivateStudyDay::where('private',  $id)->where('company',  request()->user()->company)->delete();
@@ -158,7 +155,7 @@ class PrivateController extends Controller
         return response()->json(['status' => 'success', 'message' => 'Məlumat silindi']);
     }
     public function study_days ($id){
-        $study_days = PrivateStudyDay::where('company', request()->user()->company)->where('private', $id)->get();
+        $study_days = PrivateStudyDay::where('company', request()->user()->company)->where('private', $id)->first();
         return response()->json(['status' => 'success', 'study_days' => $study_days]);
     }
 }
