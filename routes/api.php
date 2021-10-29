@@ -74,6 +74,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('/tasks/status/{id}', ['App\Http\Controllers\API\Manage\TasksController', 'status']);
         Route::apiResource('media', 'App\Http\Controllers\API\Manage\MediaController');
         Route::apiResource('users', 'App\Http\Controllers\API\UserController');
+        Route::apiResource('attendance', 'App\Http\Controllers\API\Manage\AttendanceMapController');
     });
 
     Route::prefix('teachers')->group(function () {
@@ -91,6 +92,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::post('/tasks/completed', ['App\Http\Controllers\API\Teacher\TasksController', 'completed']);
         Route::post('/tasks/status/{id}', ['App\Http\Controllers\API\Teacher\TasksController', 'status']);
 
+        Route::apiResource('students', 'App\Http\Controllers\API\Teacher\StudentController');
         Route::apiResource('group', 'App\Http\Controllers\API\Teacher\GroupController');
         //            Route::post('/group/study_days/{id}', ['App\Http\Controllers\API\Manage\GroupController', 'study_days']);
         //            Route::post('/group/get-students/{id}', ['App\Http\Controllers\API\Manage\GroupController', 'get_students']);
@@ -103,6 +105,7 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::apiResource('tests', 'App\Http\Controllers\API\Teacher\TestController');
         Route::get('/exam_tests', ['App\Http\Controllers\API\Teacher\ExamController', 'tests']);
         Route::apiResource('questions', 'App\Http\Controllers\API\Teacher\QuestionController');
+        Route::apiResource('attendance', 'App\Http\Controllers\API\Teacher\AttendanceMapController');
     });
 
     Route::prefix('students')->group(function () {
@@ -131,53 +134,12 @@ Route::group(['middleware' => 'auth:api'], function () {
         Route::apiResource('lesson', 'App\Http\Controllers\API\Student\LessonController');
         Route::apiResource('exam', 'App\Http\Controllers\API\Student\ExamController');
         Route::apiResource('tests', 'App\Http\Controllers\API\Student\TestController');
+        Route::apiResource('courses', 'App\Http\Controllers\API\Student\CourseController');
+        Route::apiResource('attendance', 'App\Http\Controllers\API\Student\AttendanceMapController');
+        Route::apiResource('test_results', 'App\Http\Controllers\API\Student\TestResultsController');
+        Route::apiResource('exam_results', 'App\Http\Controllers\API\Student\ExamResultsController');
         Route::post('test-end', ['App\Http\Controllers\API\Student\TestController', 'test_end']);
         //        Route::apiResource('questions', 'App\Http\Controllers\API\Teacher\QuestionController');
         //        });
     });
 });
-
-//Route::prefix('manager')->group(function () {
-
-
-//    Route::post('/login', ['App\Http\Controllers\API\SessionController', 'store']);
-//    Route::apiResource('login', 'App\Http\Controllers\API\SessionController');
-//    Route::post('/logout/{session}', ['App\Http\Controllers\API\SessionController', 'destroy']);
-//    Route::group(['middleware' => 'manager'], function () {
-//        Route::apiResource('tasks', 'App\Http\Controllers\API\Manage\TasksController');
-//        Route::apiResource('leads', 'App\Http\Controllers\API\Manage\LeadsController');
-//        Route::apiResource('messages', 'App\Http\Controllers\API\Manage\MessagesController');
-//        Route::apiResource('corparate', 'App\Http\Controllers\API\Manage\CorparateController');
-//        Route::apiResource('offices', 'App\Http\Controllers\API\Manage\OfficeController');
-//        Route::apiResource('administrative-staff', 'App\Http\Controllers\API\Manage\AdminStaffController');
-//        Route::apiResource('academic-staff', 'App\Http\Controllers\API\Manage\AcademicStaffController');
-//        Route::apiResource('teacher-available', 'App\Http\Controllers\API\Manage\TeacherAvailableController');
-//        Route::apiResource('announcement', 'App\Http\Controllers\API\Manage\AnnouncementController');
-//        Route::apiResource('students', 'App\Http\Controllers\API\Manage\StudentController');
-//        Route::apiResource('group-lesson', 'App\Http\Controllers\API\Manage\GroupController');
-//        Route::apiResource('private-lesson', 'App\Http\Controllers\API\Manage\PrivateController');
-//        Route::apiResource('demo-lesson', 'App\Http\Controllers\API\Manage\DemoController');
-//        Route::apiResource('exam', 'App\Http\Controllers\API\Manage\ExamController');
-//        Route::apiResource('attendance-map', 'App\Http\Controllers\API\Manage\AttendanceMapController');
-//        Route::apiResource('media', 'App\Http\Controllers\API\Manage\MediaController');
-//        Route::apiResource('tests', 'App\Http\Controllers\API\Manage\TestController');
-//        Route::apiResource('scheduling', 'App\Http\Controllers\API\Manage\SchedulingController');
-//        Route::apiResource('finance', 'App\Http\Controllers\API\Manage\FinanceController');
-//        Route::apiResource('evaluation', 'App\Http\Controllers\API\Manage\EvaluationController');
-//        Route::apiResource('lesson', 'App\Http\Controllers\API\Manage\LessonController');
-//        Route::apiResource('level', 'App\Http\Controllers\API\Manage\LevelController');
-//        Route::apiResource('learning-type', 'App\Http\Controllers\API\Manage\LearningTypeController');
-//        Route::apiResource('age-category', 'App\Http\Controllers\API\Manage\AgeCategoryController');
-//        Route::apiResource('academic-hours', 'App\Http\Controllers\API\Manage\AcademicHoursController');
-//        Route::apiResource('salary', 'App\Http\Controllers\API\Manage\SalaryController');
-//        Route::apiResource('company', 'App\Http\Controllers\API\Manage\CompanyController');
-//    });
-//    Route::group(['prefix' => 'manager'], function () {});
-//});
-
-//Route::prefix('student')->group(function () {
-//    // Route::get('/login', ['App\Http\Controllers\API\SessionController', 'index'])->name('student.login');
-//    Route::apiResource('login', 'App\Http\Controllers\API\SessionController');
-//    Route::group(['middleware' => 'student'], function () {});
-//    Route::group(['prefix' => 'student'], function () {});
-//});

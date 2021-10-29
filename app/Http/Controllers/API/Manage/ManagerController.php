@@ -78,7 +78,7 @@ class ManagerController extends Controller
         }
 
         $data = request()->all();
-        $data['login'] = request('status') == 0 ? 0 : 1;
+        $data['login'] = request('type');
         $data['company'] = request()->user()->company;
         $data['added_by'] = request()->user()->id;
         $data['password'] = Hash::make(request('password'));
@@ -144,7 +144,7 @@ class ManagerController extends Controller
         if($request->password !== null){
             $data['password'] = Hash::make($request->password);
         }
-        $data['login'] = 1;
+        $data['login'] = request('type');
 
         User::where('id', $id)->update($data);
         $user = User::where('id', $id)->first();
@@ -189,7 +189,7 @@ class ManagerController extends Controller
         {
             File::makeDirectory($path, $mode = 0777, true, true);
         }
-        $file_url = asset('assets/' . $this->createSlug($company->name) . '/profile');
+        $file_url = 'assets/' . $this->createSlug($company->name) . '/profile';
         $url = $file_url . '/' .$name;
 
 

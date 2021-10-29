@@ -11,7 +11,4 @@ class Attendance extends Model
     use SoftDeletes;
     protected $table = 'attendances';
     protected $guarded = [];
-    public function map(){
-        return $this->hasOne('App\Models\AttendanceMap');
-    }
 }

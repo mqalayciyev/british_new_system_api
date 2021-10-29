@@ -124,7 +124,7 @@ class TeacherController extends Controller
         {
             File::makeDirectory($path, $mode = 0777, true, true);
         }
-        $file_url = asset('assets/' . $this->createSlug($company->name) . '/profile');
+        $file_url = 'assets/' . $this->createSlug($company->name) . '/profile';
         $url = $file_url . '/' .$name;
 
 

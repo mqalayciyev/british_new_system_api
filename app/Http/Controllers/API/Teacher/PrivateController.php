@@ -19,9 +19,9 @@ class PrivateController extends Controller
         $private = PrivateLesson::select('private_lessons.*', 'offices.name as office_name',
             'levels.title as level_title', 'lessons.title as lesson_title', 'age_categories.title as age_category_title',
             DB::raw("CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id' , academic_hours.id , 'minutes' , academic_hours.minutes, 'price' , academic_hours.price )), ']') AS hours_price"),
-            DB::raw("CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('id' , private_study_days.id , 'monday' , private_study_days.monday,
+            DB::raw("CONCAT(GROUP_CONCAT(JSON_OBJECT('id' , private_study_days.id , 'monday' , private_study_days.monday,
                                     'tuesday' , private_study_days.tuesday, 'wednesday', private_study_days.wednesday, 'thursday', private_study_days.thursday,
-                                     'friday', private_study_days.friday, 'saturday', private_study_days.saturday, 'sunday', private_study_days.sunday )), ']') AS private_study_days"),
+                                     'friday', private_study_days.friday, 'saturday', private_study_days.saturday, 'sunday', private_study_days.sunday ))) AS study_days"),
             DB::raw("CONCAT(teacher.first_name,' ',teacher.last_name) as teacher_name"),
             DB::raw("CONCAT(students.first_name,' ',students.last_name) as student_name"))
             ->leftJoin('private_study_days', 'private_study_days.private', 'private_lessons.id')

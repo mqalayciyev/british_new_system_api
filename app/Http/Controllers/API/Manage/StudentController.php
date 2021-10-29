@@ -79,7 +79,7 @@ class StudentController extends Controller
             'learning_type', 'corparate', 'corparate', 'corparate_position');
         $data['password'] = Hash::make($request->password);
         $data['type'] = 3;
-        $data['login'] = request('status') == 0 ? 0 : 1;
+        $data['login'] = 3;
         $data['added_by'] = request()->user()->id;
         $data['company'] = request()->user()->company;
         $user = User::create($data);
@@ -156,7 +156,7 @@ class StudentController extends Controller
             $data['password'] = Hash::make($request->password);
         }
 
-        $data['login'] = request('status') == 0 ? 0 : 1;
+        $data['login'] = 3;
 
         User::where('id', $id)->update($data);
         $user = User::where('id', $id)->first();

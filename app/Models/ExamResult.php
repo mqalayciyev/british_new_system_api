@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class ExamResult extends Model
 {
     use SoftDeletes;
-    protected $table = 'exams_results';
+    protected $table = 'exam_results';
     protected $guarded = [];
 
     public function company(){

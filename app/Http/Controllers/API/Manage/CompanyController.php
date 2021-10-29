@@ -113,7 +113,7 @@ class CompanyController extends Controller
         $file->move(public_path('assets/' . $this->createSlug($company->name)), $name);
 
 
-        $file_url = asset('assets/' . $this->createSlug($company->name));
+        $file_url = 'assets/' . $this->createSlug($company->name);
         $url = $file_url . '/' .$name;
 
         $image = explode('/', $company->logo);

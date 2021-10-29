@@ -19,13 +19,15 @@ class ExamController extends Controller
      */
     public function index()
     {
-        $exam = Exam::select('exams.*', 'levels.title as level_title', 'tests.name as test_name',
-            DB::raw("CONCAT(users.first_name,' ',users.last_name) as user_name"))
+        $exam = Exam::select('exams.*', 'tests.name as test_name',
+            DB::raw("CONCAT(users.first_name,' ',users.last_name) as user_name"),
+            DB::raw("CONCAT('[',GROUP_CONCAT(JSON_OBJECT('exam_level' , levels.title )),']') AS exam_levels"))
             ->leftJoin('users', 'users.id', 'exams.added_by')
             ->leftJoin('exam_levels', 'exam_levels.exam', 'exams.id')
             ->leftJoin('levels', 'levels.id', 'exam_levels.level')
             ->leftJoin('tests', 'tests.id', 'exams.test')
             ->where('exams.company', request()->user()->company)
+            ->groupBy('exams.id')
             ->get();
         return response()->json(['status' => 'success', 'exam' => $exam]);
     }
@@ -46,7 +48,7 @@ class ExamController extends Controller
         if($validator->fails()){
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         }
-        $data = $request->only('test', 'type', 'note', 'status', 'name', 'office');
+        $data = $request->only('test', 'type', 'note', 'status', 'name', 'office', 'time');
         $data['company'] = request()->user()->company;
         $data['added_by'] = request()->user()->id;
         $exam = Exam::create($data);
@@ -92,7 +94,7 @@ class ExamController extends Controller
         if($validator->fails()){
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         }
-        $data = $request->only('test', 'type', 'note', 'status', 'name', 'office');
+        $data = $request->only('test', 'type', 'note', 'status', 'name', 'office', 'time');
         if(request('added_by') == null){
             $data['added_by'] = request()->user()->id;
         }
