@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1:3306
--- Hazırlanma Vaxtı: 25 Okt, 2021 saat 10:07
+-- Hazırlanma Vaxtı: 29 Okt, 2021 saat 12:13
 -- Server versiyası: 8.0.21
 -- PHP Versiyası: 7.4.9
 
@@ -114,40 +114,52 @@ INSERT INTO `announcements` (`id`, `company`, `user`, `student`, `manager`, `tea
 DROP TABLE IF EXISTS `attendances`;
 CREATE TABLE IF NOT EXISTS `attendances` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
-  `map` bigint UNSIGNED NOT NULL,
-  `day` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
+  `teacher` bigint UNSIGNED NOT NULL,
+  `student` bigint UNSIGNED NOT NULL,
+  `company` bigint UNSIGNED NOT NULL,
+  `lesson` bigint UNSIGNED NOT NULL,
+  `day` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `attendances_map_foreign` (`map`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `student` (`student`),
+  KEY `teacher` (`teacher`),
+  KEY `company` (`company`),
+  KEY `lesson` (`lesson`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Sxemi çıxarılan cedvel `attendances`
+--
+
+INSERT INTO `attendances` (`id`, `teacher`, `student`, `company`, `lesson`, `day`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 3, 4, 1, 1, NULL, '2021-10-27 12:46:06', '2021-10-27 12:46:06', NULL);
 
 -- --------------------------------------------------------
 
 --
--- Cədvəl üçün cədvəl strukturu `attendance_maps`
+-- Cədvəl üçün cədvəl strukturu `attendance_days`
 --
 
-DROP TABLE IF EXISTS `attendance_maps`;
-CREATE TABLE IF NOT EXISTS `attendance_maps` (
+DROP TABLE IF EXISTS `attendance_days`;
+CREATE TABLE IF NOT EXISTS `attendance_days` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
-  `company` bigint UNSIGNED NOT NULL,
-  `office` bigint UNSIGNED NOT NULL,
-  `teacher` bigint UNSIGNED DEFAULT NULL,
-  `lesson` bigint UNSIGNED DEFAULT NULL,
-  `student` bigint UNSIGNED DEFAULT NULL,
-  `status` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
+  `attendance` bigint UNSIGNED NOT NULL,
+  `status` int NOT NULL DEFAULT '0',
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `attendance_maps_company_foreign` (`company`),
-  KEY `attendance_maps_office_foreign` (`office`),
-  KEY `attendance_maps_teacher_foreign` (`teacher`),
-  KEY `attendance_maps_lesson_foreign` (`lesson`),
-  KEY `attendance_maps_student_foreign` (`student`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `attendance` (`attendance`)
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Sxemi çıxarılan cedvel `attendance_days`
+--
+
+INSERT INTO `attendance_days` (`id`, `attendance`, `status`, `created_at`, `updated_at`) VALUES
+(1, 1, 1, '2021-10-27 12:46:51', '2021-10-27 12:46:51'),
+(2, 1, 0, '2021-10-27 12:46:51', '2021-10-27 12:46:51');
 
 -- --------------------------------------------------------
 
@@ -293,13 +305,6 @@ CREATE TABLE IF NOT EXISTS `demo_lessons` (
   KEY `demo_lessons_lesson_foreign` (`lesson`)
 ) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
---
--- Sxemi çıxarılan cedvel `demo_lessons`
---
-
-INSERT INTO `demo_lessons` (`id`, `company`, `office`, `teacher`, `student`, `lesson`, `date`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 1, 1, 3, 4, 1, '2021-09-10T19:20', '0', '2021-09-03 09:18:42', '2021-09-03 09:18:42', NULL);
-
 -- --------------------------------------------------------
 
 --
@@ -336,6 +341,7 @@ CREATE TABLE IF NOT EXISTS `exams` (
   `company` bigint UNSIGNED NOT NULL,
   `office` bigint UNSIGNED NOT NULL,
   `type` bigint UNSIGNED DEFAULT NULL,
+  `time` int NOT NULL DEFAULT '0',
   `test` bigint UNSIGNED NOT NULL,
   `added_by` bigint UNSIGNED DEFAULT NULL,
   `status` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL DEFAULT '0',
@@ -354,9 +360,9 @@ CREATE TABLE IF NOT EXISTS `exams` (
 -- Sxemi çıxarılan cedvel `exams`
 --
 
-INSERT INTO `exams` (`id`, `name`, `company`, `office`, `type`, `test`, `added_by`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(2, 'Exam 1', 1, 1, 1, 2, 2, '1', '2021-10-11 04:53:44', '2021-10-11 04:53:44', NULL),
-(3, 'Exam 2', 1, 1, 1, 2, 3, '1', '2021-10-11 05:30:58', '2021-10-11 05:30:58', NULL);
+INSERT INTO `exams` (`id`, `name`, `company`, `office`, `type`, `time`, `test`, `added_by`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(2, 'Exam 1', 1, 1, 1, 15, 2, 2, '1', '2021-10-11 04:53:44', '2021-10-28 05:14:43', NULL),
+(3, 'Exam 2', 1, 1, 1, 20, 2, 3, '1', '2021-10-11 05:30:58', '2021-10-28 05:29:12', NULL);
 
 -- --------------------------------------------------------
 
@@ -376,15 +382,16 @@ CREATE TABLE IF NOT EXISTS `exam_levels` (
   KEY `exam_levels_company_foreign` (`company`),
   KEY `exam_levels_exam_foreign` (`exam`),
   KEY `exam_levels_level_foreign` (`level`)
-) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Sxemi çıxarılan cedvel `exam_levels`
 --
 
 INSERT INTO `exam_levels` (`id`, `exam`, `level`, `company`, `created_at`, `updated_at`) VALUES
-(1, 2, 1, 1, '2021-10-11 04:53:44', '2021-10-11 04:53:44'),
-(2, 3, 1, 1, '2021-10-11 05:30:58', '2021-10-11 05:30:58');
+(3, 2, 1, 1, '2021-10-28 05:14:43', '2021-10-28 05:14:43'),
+(4, 3, 1, 1, '2021-10-28 05:29:12', '2021-10-28 05:29:12'),
+(5, 3, 2, 1, '2021-10-28 05:29:12', '2021-10-28 05:29:12');
 
 -- --------------------------------------------------------
 
@@ -410,7 +417,15 @@ CREATE TABLE IF NOT EXISTS `exam_results` (
   KEY `exam_results_student_foreign` (`student`),
   KEY `exam_results_question_foreign` (`question`),
   KEY `exam_results_answer_foreign` (`answer`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Sxemi çıxarılan cedvel `exam_results`
+--
+
+INSERT INTO `exam_results` (`id`, `company`, `exam`, `student`, `question`, `answer`, `result`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(5, 1, 2, 4, 3, 11, '1', '2021-10-29 05:32:39', '2021-10-29 05:32:39', NULL),
+(6, 1, 2, 4, 4, 22, '0', '2021-10-29 05:32:39', '2021-10-29 05:32:39', NULL);
 
 -- --------------------------------------------------------
 
@@ -504,7 +519,7 @@ CREATE TABLE IF NOT EXISTS `group_lessons` (
 --
 
 INSERT INTO `group_lessons` (`id`, `name`, `company`, `office`, `level`, `hours`, `teacher`, `lesson`, `capacity`, `age_category`, `type`, `price`, `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, `sunday`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'Qrup 1', 1, 1, 1, 1, 3, 1, 3, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2021-09-03 08:31:14', '2021-09-03 08:31:14', NULL);
+(1, 'Qrup 1', 1, 1, 1, 1, 3, 1, 3, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 0, '2021-09-03 08:31:14', '2021-10-27 03:21:26', NULL);
 
 -- --------------------------------------------------------
 
@@ -558,14 +573,14 @@ CREATE TABLE IF NOT EXISTS `group_study_days` (
   PRIMARY KEY (`id`),
   KEY `group_study_days_company_foreign` (`company`),
   KEY `group_study_days_group_foreign` (`group`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Sxemi çıxarılan cedvel `group_study_days`
 --
 
 INSERT INTO `group_study_days` (`id`, `group`, `company`, `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, `sunday`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 1, 1, 0, 0, 1, 0, 0, 0, 0, '2021-09-03 08:31:14', '2021-09-03 08:31:14', NULL);
+(2, 1, 1, 1, 1, 1, 0, 0, 0, 0, '2021-10-27 03:21:26', '2021-10-27 03:21:26', NULL);
 
 -- --------------------------------------------------------
 
@@ -728,14 +743,15 @@ CREATE TABLE IF NOT EXISTS `levels` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `levels_company_foreign` (`company`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Sxemi çıxarılan cedvel `levels`
 --
 
 INSERT INTO `levels` (`id`, `note`, `title`, `company`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 'Beginner Level', 'Beginner', 1, '2021-09-03 07:02:05', '2021-09-03 07:02:10', NULL);
+(1, 'Beginner Level', 'Beginner', 1, '2021-09-03 07:02:05', '2021-09-03 07:02:10', NULL),
+(2, 'Elementary Level', 'Elementary', 1, '2021-10-28 05:28:51', '2021-10-28 05:28:51', NULL);
 
 -- --------------------------------------------------------
 
@@ -801,16 +817,15 @@ CREATE TABLE IF NOT EXISTS `messages` (
 --
 
 INSERT INTO `messages` (`id`, `sender`, `receiving`, `message`, `file_name`, `file_url`, `status`, `company`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 4, 1, 'Salam', NULL, NULL, 1, 1, '2021-10-05 03:58:28', '2021-10-12 06:13:50', NULL),
-(4, 4, 1, 'hey', NULL, NULL, 1, 1, '2021-10-05 04:29:44', '2021-10-12 06:13:50', NULL),
-(5, 4, 1, 'salam', NULL, NULL, 1, 1, '2021-10-05 04:33:15', '2021-10-12 06:13:50', NULL),
-(6, 4, 1, 'salammm', NULL, NULL, 1, 1, '2021-10-05 04:35:37', '2021-10-12 06:13:50', NULL),
-(7, 4, 1, 'salammmm', NULL, NULL, 1, 1, '2021-10-05 04:36:04', '2021-10-12 06:13:50', NULL),
-(9, 4, 1, 'email list', 'arif_suleymanov_1633423191.csv', 'http://127.0.0.1:8000/assets/british-centre/message_files', 1, 1, '2021-10-05 04:39:51', '2021-10-12 06:13:50', NULL),
-(10, 1, 4, 'salam', NULL, NULL, 0, 1, '2021-10-06 02:51:21', '2021-10-07 02:27:16', NULL),
-(11, 1, 4, 'hey', 'mehemmed_qalayciyev_1633510045.docx', 'http://127.0.0.1:8000/assets/british-centre/message_files', 0, 1, '2021-10-06 04:47:25', '2021-10-07 02:27:16', NULL),
-(12, 4, 2, 'salam', NULL, NULL, 1, 1, '2021-10-07 03:23:25', '2021-10-12 06:13:50', NULL),
-(13, 2, 4, 'salam...', NULL, NULL, 0, 1, '2021-10-07 03:27:33', '2021-10-07 03:27:33', '2021-10-04 07:40:23');
+(1, 4, 1, 'Salam', NULL, NULL, 1, 1, '2021-10-05 03:58:28', '2021-10-29 06:05:48', NULL),
+(4, 4, 1, 'hey', NULL, NULL, 1, 1, '2021-10-05 04:29:44', '2021-10-29 06:05:48', NULL),
+(5, 4, 1, 'salam', NULL, NULL, 1, 1, '2021-10-05 04:33:15', '2021-10-29 06:05:48', NULL),
+(6, 4, 1, 'salammm', NULL, NULL, 1, 1, '2021-10-05 04:35:37', '2021-10-29 06:05:48', NULL),
+(7, 4, 1, 'salammmm', NULL, NULL, 1, 1, '2021-10-05 04:36:04', '2021-10-29 06:05:48', NULL),
+(9, 4, 1, 'email list', 'arif_suleymanov_1633423191.csv', 'http://127.0.0.1:8000/assets/british-centre/message_files', 1, 1, '2021-10-05 04:39:51', '2021-10-29 06:05:48', NULL),
+(10, 1, 4, 'salam', NULL, NULL, 1, 1, '2021-10-06 02:51:21', '2021-10-27 06:55:58', NULL),
+(11, 1, 4, 'hey', 'mehemmed_qalayciyev_1633510045.docx', 'http://127.0.0.1:8000/assets/british-centre/message_files', 1, 1, '2021-10-06 04:47:25', '2021-10-27 06:55:58', NULL),
+(12, 4, 2, 'salam', NULL, NULL, 1, 1, '2021-10-07 03:23:25', '2021-10-29 06:05:48', NULL);
 
 -- --------------------------------------------------------
 
@@ -824,7 +839,7 @@ CREATE TABLE IF NOT EXISTS `migrations` (
   `migration` varchar(191) COLLATE utf8mb4_unicode_ci NOT NULL,
   `batch` int NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=MyISAM AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=MyISAM AUTO_INCREMENT=54 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Sxemi çıxarılan cedvel `migrations`
@@ -877,10 +892,10 @@ INSERT INTO `migrations` (`id`, `migration`, `batch`) VALUES
 (44, '2021_04_22_124639_create_notifications_table', 32),
 (45, '2021_04_22_124121_create_schedulings_table', 33),
 (46, '2021_04_22_124153_create_payments_table', 33),
-(47, '2021_04_22_123818_create_attendance_maps_table', 34),
 (48, '2021_04_23_080500_create_attendances_table', 35),
 (50, '2014_10_12_100000_create_password_resets_table', 37),
-(51, '2021_10_22_133900_create_company_payments_table', 37);
+(51, '2021_10_22_133900_create_company_payments_table', 37),
+(53, '2021_04_22_123818_create_attendance_days_table', 38);
 
 -- --------------------------------------------------------
 
@@ -892,8 +907,9 @@ DROP TABLE IF EXISTS `notifications`;
 CREATE TABLE IF NOT EXISTS `notifications` (
   `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
   `company` bigint UNSIGNED NOT NULL,
-  `user` bigint UNSIGNED NOT NULL,
-  `from` bigint UNSIGNED NOT NULL,
+  `user` bigint DEFAULT NULL,
+  `login` int DEFAULT NULL,
+  `from` bigint DEFAULT NULL,
   `type` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `url` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
   `content` varchar(191) COLLATE utf8mb4_unicode_ci DEFAULT NULL,
@@ -902,10 +918,15 @@ CREATE TABLE IF NOT EXISTS `notifications` (
   `updated_at` timestamp NULL DEFAULT NULL,
   `deleted_at` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
-  KEY `notifications_company_foreign` (`company`),
-  KEY `notifications_user_foreign` (`user`),
-  KEY `notifications_from_foreign` (`from`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+  KEY `notifications_company_foreign` (`company`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Sxemi çıxarılan cedvel `notifications`
+--
+
+INSERT INTO `notifications` (`id`, `company`, `user`, `login`, `from`, `type`, `url`, `content`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 1, NULL, 1, 4, 'apply', NULL, 'Arif Suleymanov English kursuna qatılmaq istəyir. İstifadəçinin qeydi: Zehmet olmasa kurs haqda melumat vererdiniz.', 0, '2021-10-27 07:54:18', '2021-10-27 07:54:18', NULL);
 
 -- --------------------------------------------------------
 
@@ -946,7 +967,7 @@ INSERT INTO `oauth_access_tokens` (`id`, `user_id`, `client_id`, `name`, `scopes
 ('b1ce815d14eb62610947cc679f6de07267f3a71642463399446c259c784ecb12ef366964ae14ac02', 3, 8, 'User Logged', '[]', 0, '2021-10-05 08:16:47', '2021-10-05 08:16:47', '2021-10-06 12:16:47'),
 ('ac6c2e2c86360ce4251822632a9b757365eb7b9f2893a5117ea6b6139856f44ffbbda61097365f9f', 1, 8, 'User Logged', '[]', 1, '2021-10-06 02:35:21', '2021-10-06 02:35:21', '2021-10-07 06:35:26'),
 ('83e31e91480919b40778b83d94e95fde274ae5ab657fe8771d09e9899d67aea4e24bff9140d1fdae', 3, 8, 'User Logged', '[]', 0, '2021-10-06 02:35:50', '2021-10-06 02:35:50', '2021-10-07 06:35:50'),
-('7f50532187aa98a88714974aed92b1b67ca0a052376743184fea60803627ad86310cd3033723f4c1', 4, 8, 'User Logged', '[]', 0, '2021-10-06 02:36:13', '2021-10-06 02:36:13', '2021-10-07 06:36:13'),
+('7f50532187aa98a88714974aed92b1b67ca0a052376743184fea60803627ad86310cd3033723f4c1', 4, 8, 'User Logged', '[]', 1, '2021-10-06 02:36:13', '2021-10-06 02:36:13', '2021-10-07 06:36:13'),
 ('e763b3a305cf97a19e638c2d0ab43362d3dbc36367894146b95876db841f1d3da7f2cd95033bfdf9', 1, 8, 'User Logged', '[]', 1, '2021-10-06 06:25:16', '2021-10-06 06:25:16', '2021-10-07 10:25:17'),
 ('8fce1d0ae0b8d07d4e2b88bc9199b050caa0b657c69ef55f8428659c64e029be8692b94b0f368e0c', 1, 8, 'User Logged', '[]', 1, '2021-10-06 06:35:20', '2021-10-06 06:35:20', '2021-10-07 10:35:20'),
 ('a97695b1bc263052be7884b2dc6335b19992b1fc7fa69bd2b1a3dc2f3bbb328a4cf6136149e843c6', 1, 8, 'User Logged', '[]', 1, '2021-10-06 06:36:11', '2021-10-06 06:36:11', '2021-10-07 10:36:11'),
@@ -955,7 +976,30 @@ INSERT INTO `oauth_access_tokens` (`id`, `user_id`, `client_id`, `name`, `scopes
 ('69d17e3d6379aadc637831ec676d7dbf58fbd8ea46821b0d36eb8e77a6b4a0b368fe8e9b1fff61ec', 1, 8, 'User Logged', '[]', 1, '2021-10-06 07:23:03', '2021-10-06 07:23:03', '2021-10-07 11:23:03'),
 ('e672bcf77a41a7487fe2a2502eeecad2f71f4ef641476c5a608c6e8f6c963a7444c217716ea08816', 1, 8, 'User Logged', '[]', 1, '2021-10-06 07:23:38', '2021-10-06 07:23:38', '2021-10-07 11:23:39'),
 ('2fc8f74d9018d2f137b549e406e131f5f339982553523a5ffeb05dc8ffc9c2b2a0a90bb1087bb046', 2, 8, 'User Logged', '[]', 1, '2021-10-07 03:27:15', '2021-10-07 03:27:15', '2021-10-08 07:27:15'),
-('611084eaa8d0d8ada05c0ffc12e8fceb696c4aa50029da377c51a9c18226954effea4bca1b33d979', 1, 8, 'User Logged', '[]', 0, '2021-10-11 07:41:39', '2021-10-11 07:41:39', '2021-10-12 11:41:40');
+('611084eaa8d0d8ada05c0ffc12e8fceb696c4aa50029da377c51a9c18226954effea4bca1b33d979', 1, 8, 'User Logged', '[]', 1, '2021-10-11 07:41:39', '2021-10-11 07:41:39', '2021-10-12 11:41:40'),
+('5e19f16225d29cf11c16c96fc64074d322260f8e1f6c1887088e5217a64c8974fbb20a824a9e4115', 1, 8, 'User Logged', '[]', 0, '2021-10-25 08:13:52', '2021-10-25 08:13:52', '2021-10-26 12:13:52'),
+('d549934bde481a44411194f77a6c2ecb0411e22a7fb12e6980086a3440ab274035d4e965000f95a1', 1, 8, 'User Logged', '[]', 0, '2021-10-25 08:27:25', '2021-10-25 08:27:25', '2021-10-26 12:27:25'),
+('deaf81b0061d1e708597d9beeb19882aa9dd6320a3583ecbb6f0ff261eed40bec4e9c3b70abbb9a5', 1, 8, 'User Logged', '[]', 0, '2021-10-25 08:27:39', '2021-10-25 08:27:39', '2021-10-26 12:27:39'),
+('92da4bbcf73b0d99606e174e4c3b55af8eec99941940ffb7db94b390d6adf1dfe66d602938e1de18', 1, 8, 'User Logged', '[]', 1, '2021-10-25 08:28:37', '2021-10-25 08:28:37', '2021-10-26 12:28:37'),
+('a88607cb10cb843120cbe9b3815d42b5cef127517742ba4f46ee61e715bab66970d1d1767148d1d9', 1, 8, 'User Logged', '[]', 1, '2021-10-25 08:35:22', '2021-10-25 08:35:22', '2021-10-26 12:35:22'),
+('58602b4a0ee51148d67d6a7085edda86022c1374c93bf0a04a2572886a487e07a70f146f7f0c20ed', 1, 8, 'User Logged', '[]', 0, '2021-10-25 08:38:19', '2021-10-25 08:38:19', '2021-10-26 12:38:19'),
+('6fbe2a9622ff88f899e567f1593fc982559b0633e95663f51b793b5ac92bc6ab880ea457dfb1a55c', 3, 8, 'User Logged', '[]', 1, '2021-10-25 09:48:40', '2021-10-25 09:48:40', '2021-10-26 13:48:40'),
+('7e150d64fd2a48f7ca62798cf2d69ff8b5459a2850348dfb28c3ccc3e31d0cd3fcab67b45f264016', 3, 8, 'User Logged', '[]', 1, '2021-10-25 09:50:12', '2021-10-25 09:50:12', '2021-10-26 13:50:12'),
+('97d19800e30ada43f78d5002fd3dee4ed7865ea82f7d13e42f019c71c2e3de92aec190ba835281b1', 1, 8, 'User Logged', '[]', 1, '2021-10-25 14:43:28', '2021-10-25 14:43:28', '2021-10-26 18:43:29'),
+('57271347f0252f9fd8d93ed21253ca071677a2db651b0eda79355b5232aafe1a151532e88ea17d20', 1, 8, 'User Logged', '[]', 0, '2021-10-26 02:23:27', '2021-10-26 02:23:27', '2021-10-27 06:23:28'),
+('2bec2f343134e3c3134217ef52d66fcc31df311bfaf1ff8715d36f27ffd6257781f352a7bbb51018', 4, 8, 'User Logged', '[]', 0, '2021-10-26 03:20:53', '2021-10-26 03:20:53', '2021-10-27 07:20:54'),
+('655d4c71238abecfc5a4e189918a29d56f6908bfa4e70c946f53b15c36837ca655a823d5ee264e89', 3, 8, 'User Logged', '[]', 0, '2021-10-26 03:30:59', '2021-10-26 03:30:59', '2021-10-27 07:30:59'),
+('83a82ab65a6acd313ddd9af8a4d75d49f447062e8a1bfbcee12a17a91fc196b9342e7fbb582f5929', 4, 8, 'User Logged', '[]', 1, '2021-10-27 06:44:27', '2021-10-27 06:44:27', '2021-10-28 10:44:27'),
+('0f695c746af5ac9dbaecc303970076100b8a4c3ab5a719457f4618d83f49154916f8dd5722d946e7', 4, 8, 'User Logged', '[]', 1, '2021-10-27 06:45:33', '2021-10-27 06:45:33', '2021-10-28 10:45:33'),
+('b8f5a0e52966207b94a6af5b6c77fde82e2bee02d38efbde3278a409c30c89608c3328fd358c3be5', 4, 8, 'User Logged', '[]', 1, '2021-10-27 09:26:36', '2021-10-27 09:26:36', '2021-10-28 13:26:36'),
+('9c7c7c4f3e4705837a1355ac4779d458a5d3dbf103b782de44fd45ad1c53cda09a8fe11085962786', 4, 8, 'User Logged', '[]', 1, '2021-10-27 09:27:07', '2021-10-27 09:27:07', '2021-10-28 13:27:07'),
+('ece5332b1cd4923d11fff9159a3eba7b0c576a7171b10b29f7e4b377a2f1d9bee923de7b83bcf9ad', 1, 8, 'User Logged', '[]', 1, '2021-10-27 09:31:19', '2021-10-27 09:31:19', '2021-10-28 13:31:19'),
+('23aa35d4eeaa31d39c69f1784bdbb8e422df3932104c2eef2b29ba967f867d2be682ffe05df4fa10', 3, 8, 'User Logged', '[]', 1, '2021-10-27 09:46:47', '2021-10-27 09:46:47', '2021-10-28 13:46:47'),
+('5d8150b10eb5cceb63871d0e9e109c19a7e70e73cbc2f7c707dd97a0ea3096c7f8ab03df61f106cb', 3, 8, 'User Logged', '[]', 0, '2021-10-27 10:06:25', '2021-10-27 10:06:25', '2021-10-28 14:06:25'),
+('e9b97e46f90a5abfe9180aecad48cff0c6bfcc33cd505d87cedec602eb305488d9862b07f2ad4053', 4, 8, 'User Logged', '[]', 0, '2021-10-27 10:16:08', '2021-10-27 10:16:08', '2021-10-28 14:16:08'),
+('d6e2372daefc9742dccfae824443574113bedc5f56a702e63e57d76d71b77a071ce1addd1c60dc32', 4, 8, 'User Logged', '[]', 1, '2021-10-28 03:27:40', '2021-10-28 03:27:40', '2021-10-29 07:27:42'),
+('2fde834074ec172907b14f9b8088379fe8cf6133c67ea675113bf68f3614a873285d5a61909b69c2', 4, 8, 'User Logged', '[]', 0, '2021-10-28 03:28:14', '2021-10-28 03:28:14', '2021-10-29 07:28:14'),
+('6f83f5c74b966f1e6798b9cd3991ccc54f8b4f57b806dc8d148a4874128b4a140c88343ba40e5e28', 3, 8, 'User Logged', '[]', 0, '2021-10-29 05:51:50', '2021-10-29 05:51:50', '2021-10-30 09:51:50');
 
 -- --------------------------------------------------------
 
@@ -1213,7 +1257,7 @@ CREATE TABLE IF NOT EXISTS `private_lessons` (
 --
 
 INSERT INTO `private_lessons` (`id`, `company`, `hours`, `teacher`, `student`, `lesson`, `price`, `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, `sunday`, `status`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 1, 1, 3, 4, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '1', '2021-09-03 08:47:29', '2021-09-03 09:05:24', NULL);
+(1, 1, 1, 3, 4, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, '1', '2021-09-03 08:47:29', '2021-10-27 03:22:09', NULL);
 
 -- --------------------------------------------------------
 
@@ -1239,15 +1283,14 @@ CREATE TABLE IF NOT EXISTS `private_study_days` (
   PRIMARY KEY (`id`),
   KEY `private_study_days_company_foreign` (`company`),
   KEY `private_study_days_private_foreign` (`private`)
-) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Sxemi çıxarılan cedvel `private_study_days`
 --
 
 INSERT INTO `private_study_days` (`id`, `private`, `company`, `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, `sunday`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(5, 1, 1, 0, 0, 0, 1, 0, 0, 0, '2021-09-03 09:05:24', '2021-09-03 09:05:24', NULL),
-(6, 1, 1, 1, 0, 0, 0, 0, 0, 0, '2021-09-03 09:05:24', '2021-09-03 09:05:24', NULL);
+(7, 1, 1, 1, 0, 1, 1, 0, 0, 0, '2021-10-27 03:22:09', '2021-10-27 03:22:09', NULL);
 
 -- --------------------------------------------------------
 
@@ -1274,7 +1317,7 @@ CREATE TABLE IF NOT EXISTS `questions` (
 INSERT INTO `questions` (`id`, `test`, `question`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (2, 1, '3+5=?', '2021-10-11 05:00:06', '2021-10-11 05:25:16', NULL),
 (3, 2, '5*30', '2021-10-11 05:05:53', '2021-10-11 05:05:53', NULL),
-(4, 3, '(8+6)*2=?', '2021-10-11 05:32:31', '2021-10-11 05:32:31', NULL);
+(4, 2, '(8+6)*2=?', '2021-10-11 05:32:31', '2021-10-11 05:32:31', NULL);
 
 -- --------------------------------------------------------
 
@@ -1362,14 +1405,14 @@ CREATE TABLE IF NOT EXISTS `student_lessons` (
   KEY `student_lessons_company_foreign` (`company`),
   KEY `student_lessons_student_foreign` (`student`),
   KEY `student_lessons_lesson_foreign` (`lesson`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 --
 -- Sxemi çıxarılan cedvel `student_lessons`
 --
 
 INSERT INTO `student_lessons` (`id`, `student`, `company`, `lesson`, `created_at`, `updated_at`, `deleted_at`) VALUES
-(1, 4, 1, 1, '2021-09-03 08:35:51', '2021-09-03 08:35:51', NULL);
+(5, 4, 1, 1, '2021-10-27 03:14:13', '2021-10-27 03:14:13', NULL);
 
 -- --------------------------------------------------------
 
@@ -1395,7 +1438,14 @@ CREATE TABLE IF NOT EXISTS `student_study_days` (
   PRIMARY KEY (`id`),
   KEY `student_study_days_company_foreign` (`company`),
   KEY `student_study_days_student_foreign` (`student`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Sxemi çıxarılan cedvel `student_study_days`
+--
+
+INSERT INTO `student_study_days` (`id`, `student`, `company`, `monday`, `tuesday`, `wednesday`, `thursday`, `friday`, `saturday`, `sunday`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(5, 4, 1, 0, 0, 0, 0, 1, 1, 1, '2021-10-27 03:14:13', '2021-10-27 03:14:13', NULL);
 
 -- --------------------------------------------------------
 
@@ -1437,7 +1487,7 @@ CREATE TABLE IF NOT EXISTS `tasks` (
 INSERT INTO `tasks` (`id`, `priority`, `client`, `direction`, `method`, `puspose`, `email`, `mobile`, `start_date`, `end_date`, `start_time`, `end_time`, `assignee`, `for_all`, `status`, `note`, `company`, `created_at`, `updated_at`, `deleted_at`) VALUES
 (1, '0', NULL, NULL, NULL, NULL, NULL, NULL, '2021-09-03', '2021-09-10', '12:52', '14:52', 1, NULL, '2', 'xfsdfsdasdasd', 1, '2021-09-03 04:58:19', '2021-10-11 09:36:14', NULL),
 (2, '1', NULL, NULL, NULL, NULL, NULL, NULL, '2021-10-05', '2021-10-06', '11:26', '11:26', 4, NULL, '2', 'note', 1, '2021-10-05 03:26:48', '2021-10-05 03:27:53', NULL),
-(3, '1', NULL, NULL, NULL, NULL, NULL, NULL, '2021-10-11', '2021-10-13', '17:35', '21:35', 1, NULL, '1', NULL, 1, '2021-10-11 09:36:08', '2021-10-11 09:36:08', NULL);
+(3, '1', NULL, NULL, NULL, NULL, NULL, NULL, '2021-10-11', '2021-10-13', '17:35', '21:35', 1, NULL, '2', NULL, 1, '2021-10-11 09:36:08', '2021-10-26 02:37:55', NULL);
 
 -- --------------------------------------------------------
 
@@ -1565,6 +1615,39 @@ INSERT INTO `tests` (`id`, `company`, `added_by`, `name`, `lesson`, `for_exam`, 
 -- --------------------------------------------------------
 
 --
+-- Cədvəl üçün cədvəl strukturu `test_results`
+--
+
+DROP TABLE IF EXISTS `test_results`;
+CREATE TABLE IF NOT EXISTS `test_results` (
+  `id` bigint UNSIGNED NOT NULL AUTO_INCREMENT,
+  `company` bigint UNSIGNED NOT NULL,
+  `test` bigint UNSIGNED NOT NULL,
+  `student` bigint UNSIGNED NOT NULL,
+  `question` bigint UNSIGNED NOT NULL,
+  `answer` bigint UNSIGNED NOT NULL,
+  `result` varchar(191) CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci NOT NULL,
+  `created_at` timestamp NULL DEFAULT NULL,
+  `updated_at` timestamp NULL DEFAULT NULL,
+  `deleted_at` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `test_results_company_foreign` (`company`),
+  KEY `test_results_test_foreign` (`test`),
+  KEY `test_results_student_foreign` (`student`),
+  KEY `test_results_question_foreign` (`question`),
+  KEY `test_results_answer_foreign` (`answer`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+--
+-- Sxemi çıxarılan cedvel `test_results`
+--
+
+INSERT INTO `test_results` (`id`, `company`, `test`, `student`, `question`, `answer`, `result`, `created_at`, `updated_at`, `deleted_at`) VALUES
+(1, 1, 1, 4, 2, 16, '1', '2021-10-29 07:59:20', '2021-10-29 07:59:20', NULL);
+
+-- --------------------------------------------------------
+
+--
 -- Cədvəl üçün cədvəl strukturu `users`
 --
 
@@ -1625,7 +1708,7 @@ INSERT INTO `users` (`id`, `first_name`, `last_name`, `email`, `email_verified_a
 (1, 'Mehemmed', 'Qalayciyev', 'mqalayciyev@mail.ru', NULL, '$2y$10$ZU9zp.grpRBEK.hkHa2Y2u8s7cCBhmDTjjCW8WJWvkPoIo1xLBbqq', 'http://127.0.0.1:8000/assets/british-centre/profile/mehemmed_qalayciyev_profile_1633433132.webp', '+994514598208', NULL, NULL, 1, '1997-11-19', 'male', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, 1, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 1, NULL, '2021-09-01 09:17:13', '2021-10-05 07:30:21', NULL),
 (2, 'Arzu', 'Huseynova', 'arzu@gmail.com', NULL, '$2y$10$1IGOJTC4vGTwFLsDTXCNhuDzouVevBdj1W9JpIy7HeilC45UnvabS', 'http://127.0.0.1:8000/assets/british-centre/profile/mehemmed_heybulla_profile_1633435814.webp', '+994514598208', NULL, 'Baki Huseyinbala Eliyev 9', 1, '1995-04-15', 'female', 'ssdasdasd', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 4, 1, 1, NULL, NULL, NULL, NULL, 1, NULL, NULL, 1, NULL, '2021-09-03 05:38:10', '2021-10-05 08:10:53', NULL),
 (3, 'Rustem', 'Eliyev', 'rustem@gmail.com', NULL, '$2y$10$XdcO/6x8Yph9t6Qw4/1NW.9RNNhdHLgjFHUk1s.epWjyqcmrbrSLa', 'http://127.0.0.1:8000/assets/british-centre/profile/rustem_eliyev_profile_1633436771.webp', '+994514598208', NULL, 'Baki Huseyinbala Eliyev 9', 1, '1994-08-06', 'male', 'dfgdfg', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 2, 1, 2, NULL, NULL, NULL, NULL, 1, 1, NULL, 1, NULL, '2021-09-03 07:27:52', '2021-10-05 08:32:06', NULL),
-(4, 'Arif', 'Suleymanov', 'arif@gmail.com', NULL, '$2y$10$saCwrvjdBQZmKt4PZs9k7.PJqhaFTzKZlyNjvFqyAxJFAE1X.JkUS', 'http://127.0.0.1:8000/assets/british-centre/profile/arif_suleymanov_profile_1633428142.webp', '+994514598208', '+994707250903', NULL, 1, '1997-11-19', 'male', 'rtgyh', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 3, 1, 3, 1, 1, NULL, NULL, 1, NULL, NULL, 1, NULL, '2021-09-03 08:29:04', '2021-10-06 02:36:35', NULL);
+(4, 'Arif', 'Suleymanov', 'arif@gmail.com', NULL, '$2y$10$saCwrvjdBQZmKt4PZs9k7.PJqhaFTzKZlyNjvFqyAxJFAE1X.JkUS', 'http://127.0.0.1:8000/assets/british-centre/profile/arif_suleymanov_profile_1633428142.webp', '+994514598208', '+994707250903', NULL, 1, '1997-11-19', 'male', 'rtgyh', NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 3, 1, 3, 1, 1, NULL, NULL, 1, NULL, NULL, 1, NULL, '2021-09-03 08:29:04', '2021-10-27 03:14:13', NULL);
 
 -- --------------------------------------------------------
 
@@ -1676,17 +1759,16 @@ ALTER TABLE `announcements`
 -- Constraints for table `attendances`
 --
 ALTER TABLE `attendances`
-  ADD CONSTRAINT `attendances_map_foreign` FOREIGN KEY (`map`) REFERENCES `attendance_maps` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `attendances_ibfk_1` FOREIGN KEY (`company`) REFERENCES `companies` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `attendances_ibfk_2` FOREIGN KEY (`student`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `attendances_ibfk_3` FOREIGN KEY (`teacher`) REFERENCES `users` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
+  ADD CONSTRAINT `attendances_ibfk_4` FOREIGN KEY (`lesson`) REFERENCES `lessons` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
--- Constraints for table `attendance_maps`
+-- Constraints for table `attendance_days`
 --
-ALTER TABLE `attendance_maps`
-  ADD CONSTRAINT `attendance_maps_company_foreign` FOREIGN KEY (`company`) REFERENCES `companies` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `attendance_maps_lesson_foreign` FOREIGN KEY (`lesson`) REFERENCES `lessons` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `attendance_maps_office_foreign` FOREIGN KEY (`office`) REFERENCES `offices` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `attendance_maps_student_foreign` FOREIGN KEY (`student`) REFERENCES `users` (`id`) ON DELETE SET NULL,
-  ADD CONSTRAINT `attendance_maps_teacher_foreign` FOREIGN KEY (`teacher`) REFERENCES `users` (`id`) ON DELETE SET NULL;
+ALTER TABLE `attendance_days`
+  ADD CONSTRAINT `attendance_days_attendance_foreign` FOREIGN KEY (`attendance`) REFERENCES `attendances` (`id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `books`
@@ -1844,9 +1926,7 @@ ALTER TABLE `messages`
 -- Constraints for table `notifications`
 --
 ALTER TABLE `notifications`
-  ADD CONSTRAINT `notifications_company_foreign` FOREIGN KEY (`company`) REFERENCES `companies` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `notifications_from_foreign` FOREIGN KEY (`from`) REFERENCES `users` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `notifications_user_foreign` FOREIGN KEY (`user`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+  ADD CONSTRAINT `notifications_company_foreign` FOREIGN KEY (`company`) REFERENCES `companies` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `offices`
@@ -1960,6 +2040,16 @@ ALTER TABLE `tests`
   ADD CONSTRAINT `tests_company_foreign` FOREIGN KEY (`company`) REFERENCES `companies` (`id`) ON DELETE CASCADE,
   ADD CONSTRAINT `tests_lesson_foreign` FOREIGN KEY (`lesson`) REFERENCES `lessons` (`id`) ON DELETE SET NULL,
   ADD CONSTRAINT `tests_level_foreign` FOREIGN KEY (`level`) REFERENCES `levels` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `test_results`
+--
+ALTER TABLE `test_results`
+  ADD CONSTRAINT `test_results_answer_foreign` FOREIGN KEY (`answer`) REFERENCES `question_answers` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `test_results_company_foreign` FOREIGN KEY (`company`) REFERENCES `companies` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `test_results_question_foreign` FOREIGN KEY (`question`) REFERENCES `questions` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `test_results_student_foreign` FOREIGN KEY (`student`) REFERENCES `users` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `test_results_test_foreign` FOREIGN KEY (`test`) REFERENCES `tests` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `users`
