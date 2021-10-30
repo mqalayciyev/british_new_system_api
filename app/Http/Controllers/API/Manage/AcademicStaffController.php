@@ -25,9 +25,9 @@ class AcademicStaffController extends Controller
     public function index()
     {
 
-        $teachers = User::select('users.*', 'offices.name as office_name',
-            DB::raw("CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('value' , lessons.id , 'label' , lessons.title )), ']') AS lessons1,
-                            CONCAT('[', GROUP_CONCAT(DISTINCT  JSON_OBJECT('value' , levels.id , 'label' , levels.title )), ']') AS levels1"))
+        $teachers = User::select(['users.*', 'offices.name as office_name',
+        DB::raw("CONCAT('[', GROUP_CONCAT(DISTINCT JSON_OBJECT('value', lessons.id,  'label', lessons.title )), ']') AS lessons1"),
+        DB::raw("CONCAT('[', GROUP_CONCAT(DISTINCT  JSON_OBJECT('value', levels.id, 'label', levels.title )), ']') AS levels1")])
             ->leftJoin('offices', 'offices.id', 'users.office')
             ->leftJoin('teacher_payments', 'teacher_payments.id', 'users.salary')
             ->leftJoin('teacher_levels', 'teacher_levels.teacher', 'users.id')
@@ -35,7 +35,7 @@ class AcademicStaffController extends Controller
             ->leftJoin('teacher_lessons', 'teacher_lessons.teacher', 'users.id')
             ->leftJoin('lessons', 'lessons.id', 'teacher_lessons.lesson')
             ->where('users.company', request()->user()->company)
-            ->where('users.type', 2)
+            ->where('users.login', 2)
             ->groupBy('users.id')
             ->get();
         return response()->json(['status' => 'success', 'teachers' => $teachers]);

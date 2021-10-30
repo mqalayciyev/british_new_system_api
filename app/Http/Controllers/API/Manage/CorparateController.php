@@ -37,7 +37,7 @@ class CorparateController extends Controller
         if($validator->fails()){
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         }
-        $data = $request->all();
+        $data = $request->only('name', 'address', 'mobile', 'phone', 'email', 'website', 'note', 'status');
         $data['company'] =  $request->user()->company;
         CorparateClient::create($data);
 
@@ -73,7 +73,7 @@ class CorparateController extends Controller
         if($validator->fails()){
             return response()->json(['status' => 'error', 'message' => $validator->errors()]);
         }
-        $data = $request->all();
+        $data = $request->only('name', 'address', 'mobile', 'phone', 'email', 'website', 'note', 'status');
         $data['company'] =  $request->user()->company;
         CorparateClient::where('id', $id)->update($data);
 

@@ -36,8 +36,7 @@ class ManagerController extends Controller
         $manager = User::leftJoin('offices', 'offices.id', 'users.office')
             ->select('users.*', "offices.id as office_id", 'offices.name')
             ->where('users.company', request()->user()->company)
-            ->where('users.type', '!=', 2)
-            ->where('users.type', '!=', 3)
+            ->where('users.login', 1)
             ->where('users.id', '!=', request()->user()->id)
             ->get();
         return response()->json(['status' => 'success', 'managers' => $manager]);
